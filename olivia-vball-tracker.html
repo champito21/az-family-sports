@@ -670,6 +670,7 @@
 
             <div class="modal-footer" id="editModalFooterAdmin">
                 <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                <button type="button" class="btn-danger" onclick="deleteFromEditModal()">Delete</button>
                 <button type="submit" class="save-btn" style="margin-top:0">Update Game</button>
             </div>
             <div class="modal-footer" id="editModalFooterViewer" style="display:none;">
@@ -1128,6 +1129,12 @@
 
     function closeEditModal() {
         document.getElementById('editModal').classList.remove('active');
+    }
+
+    function deleteFromEditModal() {
+        const gameId = document.getElementById('editGameId').value;
+        closeEditModal();
+        deleteGame(gameId);
     }
 
     function submitEdit(event) {
