@@ -477,7 +477,7 @@
                 snapshot.forEach((child) => {
                     const g = child.val();
                     if (g && g.date) {
-                        games.push({ kid: kid, date: g.date, location: g.location || '' });
+                        games.push({ kid: kid, id: child.key, date: g.date, location: g.location || '' });
                     }
                 });
                 resolve(games);
@@ -525,7 +525,8 @@
 
             const chips = dayGames.slice(0, 3).map((g) => {
                 const title = `${g.kid.name} \u2013 ${g.kid.sport}${g.location ? ': ' + g.location : ''}`;
-                return `<a href="${g.kid.page}" class="cal-chip" style="background:${g.kid.color}" title="${escapeHtmlHome(title)}">${g.kid.emoji}</a>`;
+                const href = g.id ? `${g.kid.page}?game=${encodeURIComponent(g.id)}` : g.kid.page;
+                return `<a href="${href}" class="cal-chip" style="background:${g.kid.color}" title="${escapeHtmlHome(title)}">${g.kid.emoji}</a>`;
             }).join('');
             const more = dayGames.length > 3 ? `<span class="cal-more">+${dayGames.length - 3}</span>` : '';
 
