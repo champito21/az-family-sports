@@ -919,6 +919,12 @@
     document.getElementById('gameDate').value = new Date().toISOString().slice(0, 16);
     renderCalendar();
 
+    // Arrived from the homepage calendar with a specific game linked? Open it directly.
+    const deepLinkGameId = new URLSearchParams(window.location.search).get('game');
+    if (deepLinkGameId && gamesRef) {
+        openEditModal(deepLinkGameId);
+    }
+
     function updateStat(statKey, change) {
         stats[statKey] = Math.max(0, stats[statKey] + change);
         document.getElementById(statKey).innerText = stats[statKey];
