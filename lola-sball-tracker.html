@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lola's Softball Career</title>
+    <style>
+        :root {
+            --primary: #ea580c;
+            --primary-hover: #c2410c;
+            --primary-light: #ffedd5;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .site-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #6b7280;
+            padding-bottom: 16px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .site-nav a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .site-nav a:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background-color: #ffedd5;
+            color: var(--primary);
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .counter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .counter button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: #f9fafb;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .counter button:active {
+            background: #e5e7eb;
+        }
+
+        .counter span {
+            font-size: 18px;
+            font-weight: bold;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .save-btn:hover {
+            background-color: #059669;
+        }
+
+        .save-btn:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .history-card {
+            border-left: 4px solid var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .history-header {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .history-sub {
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .history-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border);
+            background: #f9fafb;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-action.edit:hover {
+            background: #ffedd5;
+            color: var(--primary);
+        }
+
+        .btn-action.delete {
+            color: var(--danger);
+        }
+
+        .btn-action.delete:hover {
+            background: #fee2e2;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #9ca3af;
+            padding: 40px 0;
+        }
+
+        .loading-state {
+            text-align: center;
+            color: var(--primary);
+            padding: 40px 0;
+        }
+
+        .firebase-warning {
+            display: none;
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .firebase-warning.active {
+            display: block;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .modal h3 {
+            margin-top: 0;
+            color: var(--text);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: #f9fafb;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-danger {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: var(--danger);
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .modal p {
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        /* Calendar */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .calendar-month-label {
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .cal-nav-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: #f9fafb;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cal-nav-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .calendar-add-row {
+            text-align: right;
+            margin-bottom: 12px;
+        }
+
+        .calendar-add-row .btn-action,
+        .history-actions .btn-action {
+            width: auto;
+            display: inline-block;
+            padding: 8px 14px;
+        }
+
+        .history-actions {
+            text-align: right;
+            margin-bottom: 12px;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 0.75em;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .calendar-day {
+            min-height: 60px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card-bg);
+            padding: 4px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            font-size: 0.68em;
+            overflow: hidden;
+            transition: background 0.15s;
+        }
+
+        .calendar-day:hover {
+            background: #f3f4f6;
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .calendar-day .day-num {
+            font-weight: 700;
+            font-size: 1.15em;
+            margin-bottom: 2px;
+        }
+
+        .calendar-day.today .day-num {
+            color: var(--primary);
+        }
+
+        .calendar-day .day-game {
+            width: 100%;
+            box-sizing: border-box;
+            min-width: 0;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin-bottom: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .calendar-day.has-game {
+            border-color: var(--primary);
+        }
+
+        .day-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .day-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .day-list-item:hover {
+            color: var(--primary);
+        }
+
+        .day-list-empty {
+            color: #9ca3af;
+            padding: 12px 0;
+            text-align: center;
+        }
+
+        .admin-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+
+        .admin-bar a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .admin-bar a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-bar.is-admin {
+            color: #059669;
+        }
+
+        input:disabled {
+            background: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .counter button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .request-card {
+            border-left: 4px solid #f59e0b;
+            margin-bottom: 15px;
+        }
+
+        .request-note {
+            font-style: italic;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="site-nav">
+        <a href="index.html">← AZ Family Sports</a>
+    </div>
+
+    <div class="admin-bar" id="adminBar">
+        <span id="adminStatus">Viewing as: Family</span>
+        <a href="#" id="adminToggleLink" onclick="openAdminLoginModal(); return false;">Admin Login</a>
+    </div>
+
+    <h1>🥎 Lola's Softball Career</h1>
+
+    <div id="firebaseWarning" class="firebase-warning">
+        ⚠️ Could not connect to Firebase. Counters will still work, but Save/History won't until this is fixed.
+    </div>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('calendar', event)">Calendar</button>
+        <button class="tab-btn" onclick="switchTab('tracker', event)">Track Game</button>
+        <button class="tab-btn" onclick="switchTab('history', event)">History</button>
+        <button class="tab-btn" id="requestsTabBtn" style="display:none;" onclick="switchTab('requests', event)">Requests</button>
+    </div>
+
+    <!-- Tracker View -->
+    <div id="tracker" class="tab-content">
+        <form class="card" onsubmit="saveGame(event)">
+            <div class="form-group">
+                <label for="gameDate">Date & Time</label>
+                <input type="datetime-local" id="gameDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="gameLocation">Location / Opponent</label>
+                <input type="text" id="gameLocation" placeholder="e.g., Home vs Rockets" required>
+            </div>
+
+            <div class="stat-row">
+                <span>Runs</span>
+                <div class="counter">
+                    <button type="button" onclick="updateStat('runs', -1)">-</button>
+                    <span id="runs">0</span>
+                    <button type="button" onclick="updateStat('runs', 1)">+</button>
+                </div>
+            </div>
+            <div class="stat-row">
+                <span>Outs</span>
+                <div class="counter">
+                    <button type="button" onclick="updateStat('outs', -1)">-</button>
+                    <span id="outs">0</span>
+                    <button type="button" onclick="updateStat('outs', 1)">+</button>
+                </div>
+            </div>
+            <div class="stat-row">
+                <span>Bases</span>
+                <div class="counter">
+                    <button type="button" onclick="updateStat('bases', -1)">-</button>
+                    <span id="bases">0</span>
+                    <button type="button" onclick="updateStat('bases', 1)">+</button>
+                </div>
+            </div>
+            <div class="stat-row">
+                <span>RBI</span>
+                <div class="counter">
+                    <button type="button" onclick="updateStat('rbi', -1)">-</button>
+                    <span id="rbi">0</span>
+                    <button type="button" onclick="updateStat('rbi', 1)">+</button>
+                </div>
+            </div>
+
+            <button type="submit" class="save-btn">Save Game & Reset Tracker</button>
+        </form>
+    </div>
+
+    <!-- History View -->
+    <div id="history" class="tab-content">
+        <div class="history-actions">
+            <button type="button" class="btn-action edit" onclick="exportHistoryCSV()">Export CSV</button>
+        </div>
+        <div id="historyList"></div>
+    </div>
+
+    <!-- Calendar View -->
+    <div id="calendar" class="tab-content active">
+        <div class="calendar-header">
+            <button type="button" class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+            <span id="calendarMonthLabel" class="calendar-month-label"></span>
+            <button type="button" class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+        </div>
+        <div class="calendar-add-row">
+            <button type="button" class="btn-action edit" onclick="openAddModal(null)">+ Add Game</button>
+        </div>
+        <div class="calendar-weekdays">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+    </div>
+
+    <!-- Requests View (admin only) -->
+    <div id="requests" class="tab-content">
+        <div id="requestsList"></div>
+    </div>
+</div>
+
+<!-- Edit Game Modal -->
+<div id="editModal" class="modal-overlay">
+    <div class="modal">
+        <h3>Edit Saved Game</h3>
+        <form id="editForm" onsubmit="submitEdit(event)">
+            <input type="hidden" id="editGameId">
+            <div class="form-group">
+                <label for="editDate">Date & Time</label>
+                <input type="datetime-local" id="editDate" required>
+            </div>
+            <div class="form-group">
+                <label for="editLocation">Location / Opponent</label>
+                <input type="text" id="editLocation" required>
+            </div>
+
+            <div class="stat-row">
+                <span>Runs</span>
+                <div class="counter">
+                    <button type="button" onclick="updateEditStat('runs', -1)">-</button>
+                    <span id="edit_runs">0</span>
+                    <button type="button" onclick="updateEditStat('runs', 1)">+</button>
+                </div>
+            </div>
+            <div class="stat-row">
+                <span>Outs</span>
+                <div class="counter">
+                    <button type="button" onclick="updateEditStat('outs', -1)">-</button>
+                    <span id="edit_outs">0</span>
+                    <button type="button" onclick="updateEditStat('outs', 1)">+</button>
+                </div>
+            </div>
+            <div class="stat-row">
+                <span>Bases</span>
+                <div class="counter">
+                    <button type="button" onclick="updateEditStat('bases', -1)">-</button>
+                    <span id="edit_bases">0</span>
+                    <button type="button" onclick="updateEditStat('bases', 1)">+</button>
+                </div>
+            </div>
+            <div class="stat-row">
+                <span>RBI</span>
+                <div class="counter">
+                    <button type="button" onclick="updateEditStat('rbi', -1)">-</button>
+                    <span id="edit_rbi">0</span>
+                    <button type="button" onclick="updateEditStat('rbi', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="modal-footer" id="editModalFooterAdmin">
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                <button type="button" class="btn-danger" onclick="deleteFromEditModal()">Delete</button>
+                <button type="submit" class="save-btn" style="margin-top:0">Update Game</button>
+            </div>
+            <div class="modal-footer" id="editModalFooterViewer" style="display:none;">
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">Close</button>
+                <button type="button" class="save-btn" style="margin-top:0" onclick="requestChangeFromEditModal('edit')">Request Change</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="addModal" class="modal-overlay">
+    <div class="modal">
+        <h3>Add Game</h3>
+        <form id="addForm" onsubmit="submitAdd(event)">
+            <div class="form-group">
+                <label for="addDate">Date & Time</label>
+                <input type="datetime-local" id="addDate" required>
+            </div>
+            <div class="form-group">
+                <label for="addLocation">Location / Opponent</label>
+                <input type="text" id="addLocation" placeholder="e.g., Home vs Rockets" required>
+            </div>
+
+            <div class="stat-row">
+                <span>Runs</span>
+                <div class="counter">
+                    <button type="button" onclick="updateAddStat('runs', -1)">-</button>
+                    <span id="add_runs">0</span>
+                    <button type="button" onclick="updateAddStat('runs', 1)">+</button>
+                </div>
+            </div>
+            <div class="stat-row">
+                <span>Outs</span>
+                <div class="counter">
+                    <button type="button" onclick="updateAddStat('outs', -1)">-</button>
+                    <span id="add_outs">0</span>
+                    <button type="button" onclick="updateAddStat('outs', 1)">+</button>
+                </div>
+            </div>
+            <div class="stat-row">
+                <span>Bases</span>
+                <div class="counter">
+                    <button type="button" onclick="updateAddStat('bases', -1)">-</button>
+                    <span id="add_bases">0</span>
+                    <button type="button" onclick="updateAddStat('bases', 1)">+</button>
+                </div>
+            </div>
+            <div class="stat-row">
+                <span>RBI</span>
+                <div class="counter">
+                    <button type="button" onclick="updateAddStat('rbi', -1)">-</button>
+                    <span id="add_rbi">0</span>
+                    <button type="button" onclick="updateAddStat('rbi', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+                <button type="submit" class="save-btn" style="margin-top:0">Save Game</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Day Games List Modal (from Calendar day click) -->
+<div id="dayModal" class="modal-overlay">
+    <div class="modal">
+        <h3 id="dayModalTitle">Games</h3>
+        <div id="dayModalList"></div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeDayModal()">Close</button>
+            <button type="button" class="save-btn" style="margin-top:0" onclick="addGameFromDayModal()">+ Add Game</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal-overlay">
+    <div class="modal">
+        <h3>Delete this game?</h3>
+        <p id="deleteModalText"></p>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button type="button" class="btn-danger" onclick="confirmDelete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="adminLoginModal" class="modal-overlay">
+    <div class="modal">
+        <h3>Admin Login</h3>
+        <form onsubmit="submitAdminLogin(event)">
+            <div class="form-group">
+                <label for="adminEmailInput">Email</label>
+                <input type="email" id="adminEmailInput" required autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="adminPassInput">Password</label>
+                <input type="password" id="adminPassInput" required autocomplete="current-password">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeAdminLoginModal()">Cancel</button>
+                <button type="submit" class="save-btn" style="margin-top:0">Unlock</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Request Change Modal -->
+<div id="requestChangeModal" class="modal-overlay">
+    <div class="modal">
+        <h3 id="requestChangeTitle">Request a change</h3>
+        <p>Please text Jose/Champ to request this change</p>
+        <div class="form-group">
+            <label for="requestNote">What would you like changed? (optional)</label>
+            <input type="text" id="requestNote" placeholder="e.g., update points to 12">
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" onclick="closeRequestChangeModal()">Cancel</button>
+            <button type="button" class="save-btn" style="margin-top:0" onclick="submitChangeRequest()">Send Request</button>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase Compat Scripts (corrected filenames — no "firebase-compat/" subfolder) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+<script>
+    // Declare state up front so counter buttons work even if Firebase fails to load.
+    let stats = { runs: 0, outs: 0, bases: 0, rbi: 0 };
+    let editStats = { runs: 0, outs: 0, bases: 0, rbi: 0 };
+    let addStats = { runs: 0, outs: 0, bases: 0, rbi: 0 };
+    let gamesRef = null;
+    let requestsRef = null;
+    let allGamesCache = [];
+    let calendarViewDate = new Date();
+    let pendingDeleteId = null;
+    let pendingDayDate = null;
+
+    // Real security: Firebase Authentication + server-side Security Rules enforce that only
+    // the signed-in account matching this UID can edit or delete existing games, or manage
+    // change requests. This UID is not a secret — it's fine for it to appear in the page source;
+    // the actual protection lives in Firebase's Security Rules, checked on Firebase's servers.
+    const ADMIN_UID = '7sKC11oB1wbCRcl8IXaXVkt9e9L2';
+    let isAdmin = false;
+    let pendingRequestGameId = null;
+    let pendingRequestType = null;
+
+    // Auto-logout: admin sessions expire after 1 hour of INACTIVITY (not 1 hour from login),
+    // even across page reloads, so you don't have to remember to log out manually. Any
+    // mouse/keyboard/touch/scroll activity resets the clock.
+    const ADMIN_IDLE_MS = 60 * 60 * 1000;
+    const ADMIN_ACTIVITY_EVENTS = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
+    let adminLogoutTimer = null;
+    let lastActivityWriteTime = 0;
+
+    function recordAdminActivity() {
+        if (!isAdmin) return;
+
+        clearTimeout(adminLogoutTimer);
+        adminLogoutTimer = setTimeout(() => {
+            firebase.auth().signOut();
+        }, ADMIN_IDLE_MS);
+
+        // Throttle localStorage writes so we're not writing on every mousemove.
+        const now = Date.now();
+        if (now - lastActivityWriteTime > 10000) {
+            lastActivityWriteTime = now;
+            try { localStorage.setItem('adminLastActivity', String(now)); } catch (e) { /* ignore */ }
+        }
+    }
+
+    function scheduleAdminAutoLogout() {
+        ADMIN_ACTIVITY_EVENTS.forEach(evt => document.removeEventListener(evt, recordAdminActivity));
+
+        let lastActivity = null;
+        try {
+            lastActivity = parseInt(localStorage.getItem('adminLastActivity'), 10);
+        } catch (e) {
+            lastActivity = null;
+        }
+
+        if (!lastActivity || isNaN(lastActivity)) {
+            lastActivity = Date.now();
+            try { localStorage.setItem('adminLastActivity', String(lastActivity)); } catch (e) { /* ignore */ }
+        }
+
+        const remaining = ADMIN_IDLE_MS - (Date.now() - lastActivity);
+
+        clearTimeout(adminLogoutTimer);
+        if (remaining <= 0) {
+            firebase.auth().signOut();
+            return;
+        }
+
+        adminLogoutTimer = setTimeout(() => {
+            firebase.auth().signOut();
+        }, remaining);
+
+        ADMIN_ACTIVITY_EVENTS.forEach(evt => document.addEventListener(evt, recordAdminActivity));
+    }
+
+    function clearAdminAutoLogout() {
+        clearTimeout(adminLogoutTimer);
+        try { localStorage.removeItem('adminLastActivity'); } catch (e) { /* ignore */ }
+        ADMIN_ACTIVITY_EVENTS.forEach(evt => document.removeEventListener(evt, recordAdminActivity));
+    }
+
+    // ========== PASTE YOUR FIREBASE CONFIG HERE ==========
+    const firebaseConfig = {
+        apiKey: "AIzaSyCt-L8qbpzuIkSnoRUWAogJ91GrwlukqVw",
+        authDomain: "az-family-sports.firebaseapp.com",
+        databaseURL: "https://az-family-sports-default-rtdb.firebaseio.com",
+        projectId: "az-family-sports",
+        storageBucket: "az-family-sports.firebasestorage.app",
+        messagingSenderId: "682932148688",
+        appId: "1:682932148688:web:98990495f08a22614941d5"
+    };
+    // ====================================================
+
+    // Initialize Firebase — wrapped so a load/config failure can't take down the whole page.
+    try {
+        if (typeof firebase === 'undefined') {
+            throw new Error('Firebase SDK scripts did not load.');
+        }
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        gamesRef = db.ref('kids/lolaSoftball/games');
+        requestsRef = db.ref('kids/lolaSoftball/changeRequests');
+
+        firebase.auth().onAuthStateChanged((user) => {
+            isAdmin = !!user && user.uid === ADMIN_UID;
+            updateAdminUI();
+            if (isAdmin) {
+                scheduleAdminAutoLogout();
+            } else {
+                clearAdminAutoLogout();
+            }
+        });
+    } catch (err) {
+        console.error('Firebase failed to initialize:', err);
+        document.getElementById('firebaseWarning').classList.add('active');
+    }
+
+    document.getElementById('gameDate').value = new Date().toISOString().slice(0, 16);
+    renderCalendar();
+
+    function updateStat(statKey, change) {
+        stats[statKey] = Math.max(0, stats[statKey] + change);
+        document.getElementById(statKey).innerText = stats[statKey];
+    }
+
+    function updateEditStat(statKey, change) {
+        editStats[statKey] = Math.max(0, editStats[statKey] + change);
+        document.getElementById('edit_' + statKey).innerText = editStats[statKey];
+    }
+
+    function switchTab(tabName, evt) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+        document.getElementById(tabName).classList.add('active');
+        if (evt) evt.currentTarget.classList.add('active');
+
+        if (tabName === 'history') {
+            renderHistory();
+        } else if (tabName === 'calendar') {
+            renderCalendar();
+        } else if (tabName === 'requests') {
+            renderRequests();
+        }
+    }
+
+    function escapeHtml(str) {
+        return String(str).replace(/[&<>"']/g, ch => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[ch]));
+    }
+
+    function fetchAllGames(callback) {
+        if (!gamesRef) { callback([]); return; }
+        gamesRef.once('value', (snapshot) => {
+            const games = [];
+            snapshot.forEach(childSnapshot => {
+                games.push({ id: childSnapshot.key, ...childSnapshot.val() });
+            });
+            allGamesCache = games;
+            callback(games);
+        }).catch(error => {
+            console.error('Error loading games:', error);
+            callback([]);
+        });
+    }
+
+    function requireFirebase() {
+        if (!gamesRef) {
+            alert('Firebase is not connected, so this action is unavailable right now. Check your Firebase config/network.');
+            return false;
+        }
+        return true;
+    }
+
+    function saveGame(event) {
+        event.preventDefault();
+        if (!requireFirebase()) return;
+
+        const location = document.getElementById('gameLocation').value.trim();
+        const date = document.getElementById('gameDate').value;
+
+        if (!location) return;
+
+        const saveBtn = event.target.querySelector('.save-btn');
+        saveBtn.disabled = true;
+        saveBtn.innerText = 'Saving...';
+
+        const gameId = String(Date.now());
+        const gameObject = {
+            date: date,
+            location: location,
+            stats: { ...stats }
+        };
+
+        gamesRef.child(gameId).set(gameObject).then(() => {
+            stats = { runs: 0, outs: 0, bases: 0, rbi: 0 };
+            Object.keys(stats).forEach(key => document.getElementById(key).innerText = 0);
+            document.getElementById('gameLocation').value = '';
+            document.getElementById('gameDate').value = new Date().toISOString().slice(0, 16);
+
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Save Game & Reset Tracker';
+            alert('Game saved successfully!');
+        }).catch(error => {
+            console.error('Error saving game:', error);
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Save Game & Reset Tracker';
+            alert('Error saving game. Please check your Firebase config.');
+        });
+    }
+
+    function renderHistory() {
+        const historyContainer = document.getElementById('historyList');
+
+        if (!gamesRef) {
+            historyContainer.innerHTML = '<div class="empty-state">Firebase is not connected, so history is unavailable.</div>';
+            return;
+        }
+
+        historyContainer.innerHTML = '<div class="loading-state">Loading games...</div>';
+
+        fetchAllGames((games) => {
+            if (games.length === 0) {
+                historyContainer.innerHTML = '<div class="empty-state">No saved games found yet.</div>';
+                return;
+            }
+
+            // Sort by date descending (newest first)
+            const sorted = [...games].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            historyContainer.innerHTML = sorted.map(game => {
+                const formattedDate = new Date(game.date).toLocaleString([], {
+                    dateStyle: 'medium',
+                    timeStyle: 'short'
+                });
+
+                return `
+                    <div class="card history-card">
+                        <div class="history-header">${game.location}</div>
+                        <div class="history-sub">${formattedDate}</div>
+                        <div class="history-stats">
+                            <div><strong>Runs:</strong> ${game.stats.runs}</div>
+                            <div><strong>Outs:</strong> ${game.stats.outs}</div>
+                            <div><strong>Bases:</strong> ${game.stats.bases}</div>
+                            <div><strong>RBI:</strong> ${game.stats.rbi}</div>
+                        </div>
+                        <div class="card-actions">
+                            <button type="button" class="btn-action edit" onclick="openEditModal('${game.id}')">Edit</button>
+                            <button type="button" class="btn-action delete" onclick="handleDeleteClick('${game.id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        });
+    }
+
+    function deleteGame(id) {
+        if (!requireFirebase()) return;
+
+        pendingDeleteId = id;
+        const game = allGamesCache.find(g => g.id === id);
+        const deleteText = document.getElementById('deleteModalText');
+        if (game) {
+            const formattedDate = new Date(game.date).toLocaleDateString([], { dateStyle: 'medium' });
+            deleteText.innerText = `This will permanently delete the game vs ${game.location} on ${formattedDate}, including all its stats. This can't be undone.`;
+        } else {
+            deleteText.innerText = "This will permanently delete this game and its stats. This can't be undone.";
+        }
+
+        document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+        pendingDeleteId = null;
+        document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    function confirmDelete() {
+        if (!pendingDeleteId) return;
+        const id = pendingDeleteId;
+
+        gamesRef.child(id).remove().then(() => {
+            closeDeleteModal();
+            if (document.getElementById('history').classList.contains('active')) {
+                renderHistory();
+            }
+            if (document.getElementById('calendar').classList.contains('active')) {
+                renderCalendar();
+            }
+        }).catch(error => {
+            console.error('Error deleting game:', error);
+            alert('Error deleting game.');
+            closeDeleteModal();
+        });
+    }
+
+    function openEditModal(id) {
+        if (!requireFirebase()) return;
+
+        gamesRef.child(id).once('value', (snapshot) => {
+            const game = snapshot.val();
+            if (!game) return;
+
+            document.getElementById('editGameId').value = id;
+            document.getElementById('editDate').value = game.date;
+            document.getElementById('editLocation').value = game.location;
+
+            editStats = { ...game.stats };
+            Object.keys(editStats).forEach(key => {
+                document.getElementById('edit_' + key).innerText = editStats[key];
+            });
+
+            setEditModalMode(isAdmin);
+            document.getElementById('editModal').classList.add('active');
+        });
+    }
+
+    function setEditModalMode(adminMode) {
+        document.getElementById('editDate').disabled = !adminMode;
+        document.getElementById('editLocation').disabled = !adminMode;
+        document.querySelectorAll('#editModal .counter button').forEach(btn => btn.disabled = !adminMode);
+        document.getElementById('editModalFooterAdmin').style.display = adminMode ? 'flex' : 'none';
+        document.getElementById('editModalFooterViewer').style.display = adminMode ? 'none' : 'flex';
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.remove('active');
+    }
+
+    function deleteFromEditModal() {
+        const gameId = document.getElementById('editGameId').value;
+        closeEditModal();
+        deleteGame(gameId);
+    }
+
+    function submitEdit(event) {
+        event.preventDefault();
+        if (!requireFirebase()) return;
+        if (!isAdmin) return;
+
+        const id = document.getElementById('editGameId').value;
+        const submitBtn = event.target.querySelector('.save-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Updating...';
+
+        const updateData = {
+            date: document.getElementById('editDate').value,
+            location: document.getElementById('editLocation').value.trim(),
+            stats: { ...editStats }
+        };
+
+        gamesRef.child(id).set(updateData).then(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Update Game';
+            closeEditModal();
+            if (document.getElementById('history').classList.contains('active')) {
+                renderHistory();
+            }
+            if (document.getElementById('calendar').classList.contains('active')) {
+                renderCalendar();
+            }
+        }).catch(error => {
+            console.error('Error updating game:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Update Game';
+            alert('Error updating game.');
+        });
+    }
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        const label = document.getElementById('calendarMonthLabel');
+
+        const year = calendarViewDate.getFullYear();
+        const month = calendarViewDate.getMonth();
+        label.innerText = calendarViewDate.toLocaleString([], { month: 'long', year: 'numeric' });
+
+        if (!gamesRef) {
+            grid.innerHTML = '<div class="empty-state">Firebase is not connected, so the calendar is unavailable.</div>';
+            return;
+        }
+
+        grid.innerHTML = '<div class="loading-state">Loading calendar...</div>';
+
+        fetchAllGames((games) => {
+            const gamesByDay = {};
+            games.forEach(game => {
+                const dayKey = (game.date || '').slice(0, 10);
+                if (!dayKey) return;
+                if (!gamesByDay[dayKey]) gamesByDay[dayKey] = [];
+                gamesByDay[dayKey].push(game);
+            });
+
+            const firstOfMonth = new Date(year, month, 1);
+            const startWeekday = firstOfMonth.getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const todayKey = new Date().toISOString().slice(0, 10);
+
+            let cellsHtml = '';
+            for (let i = 0; i < startWeekday; i++) {
+                cellsHtml += '<div class="calendar-day empty"></div>';
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const dayGames = gamesByDay[dayKey] || [];
+                const isToday = dayKey === todayKey;
+                const hasGame = dayGames.length > 0;
+
+                const gameLabels = dayGames.slice(0, 2).map(g => `<div class="day-game">${escapeHtml(g.location)}</div>`).join('');
+                const moreLabel = dayGames.length > 2 ? `<div class="day-game">+${dayGames.length - 2} more</div>` : '';
+
+                cellsHtml += `
+                    <div class="calendar-day ${isToday ? 'today' : ''} ${hasGame ? 'has-game' : ''}" onclick="openDayModal('${dayKey}')">
+                        <div class="day-num">${d}</div>
+                        ${gameLabels}
+                        ${moreLabel}
+                    </div>
+                `;
+            }
+
+            grid.innerHTML = cellsHtml;
+        });
+    }
+
+    function changeMonth(delta) {
+        calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + delta, 1);
+        renderCalendar();
+    }
+
+    function openDayModal(dayKey) {
+        pendingDayDate = dayKey;
+        const dayGames = allGamesCache.filter(g => (g.date || '').slice(0, 10) === dayKey);
+
+        const dateLabel = new Date(dayKey + 'T00:00').toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+        document.getElementById('dayModalTitle').innerText = dateLabel;
+
+        const listEl = document.getElementById('dayModalList');
+        if (dayGames.length === 0) {
+            listEl.innerHTML = '<div class="day-list-empty">No games scheduled this day yet.</div>';
+        } else {
+            listEl.innerHTML = dayGames.map(g => `
+                <div class="day-list-item" onclick="selectDayGame('${g.id}')">
+                    <span>${escapeHtml(g.location)}</span>
+                    <span>›</span>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('dayModal').classList.add('active');
+    }
+
+    function closeDayModal() {
+        document.getElementById('dayModal').classList.remove('active');
+    }
+
+    function selectDayGame(id) {
+        closeDayModal();
+        openEditModal(id);
+    }
+
+    function addGameFromDayModal() {
+        const prefillDate = pendingDayDate;
+        closeDayModal();
+        openAddModal(prefillDate);
+    }
+
+    function openAddModal(dayKey) {
+        if (!requireFirebase()) return;
+
+        addStats = { runs: 0, outs: 0, bases: 0, rbi: 0 };
+        Object.keys(addStats).forEach(key => {
+            document.getElementById('add_' + key).innerText = 0;
+        });
+
+        const defaultDateTime = dayKey ? `${dayKey}T12:00` : new Date().toISOString().slice(0, 16);
+        document.getElementById('addDate').value = defaultDateTime;
+        document.getElementById('addLocation').value = '';
+
+        document.getElementById('addModal').classList.add('active');
+    }
+
+    function closeAddModal() {
+        document.getElementById('addModal').classList.remove('active');
+    }
+
+    function updateAddStat(statKey, change) {
+        addStats[statKey] = Math.max(0, addStats[statKey] + change);
+        document.getElementById('add_' + statKey).innerText = addStats[statKey];
+    }
+
+    function submitAdd(event) {
+        event.preventDefault();
+        if (!requireFirebase()) return;
+
+        const location = document.getElementById('addLocation').value.trim();
+        const date = document.getElementById('addDate').value;
+        if (!location) return;
+
+        const submitBtn = event.target.querySelector('.save-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Saving...';
+
+        const gameId = String(Date.now());
+        const gameObject = {
+            date: date,
+            location: location,
+            stats: { ...addStats }
+        };
+
+        gamesRef.child(gameId).set(gameObject).then(() => {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Save Game';
+            closeAddModal();
+            renderCalendar();
+        }).catch(error => {
+            console.error('Error saving game:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Save Game';
+            alert('Error saving game. Please check your Firebase config.');
+        });
+    }
+
+    function csvEscape(value) {
+        const str = String(value === undefined || value === null ? '' : value);
+        if (/[",\r\n]/.test(str)) {
+            return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+    }
+
+    function downloadCSV(csvContent, filename) {
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function exportHistoryCSV() {
+        if (!requireFirebase()) return;
+
+        fetchAllGames((games) => {
+            if (!games || games.length === 0) {
+                alert('No games to export yet.');
+                return;
+            }
+
+            const sorted = [...games].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const headers = ['Date', 'Location/Opponent', 'Runs', 'Outs', 'Bases', 'RBI'];
+            const rows = sorted.map(g => [
+                g.date ? new Date(g.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : '',
+                g.location || '',
+                g.stats?.runs ?? 0,
+                g.stats?.outs ?? 0,
+                g.stats?.bases ?? 0,
+                g.stats?.rbi ?? 0
+            ]);
+
+            const csv = [headers, ...rows].map(row => row.map(csvEscape).join(',')).join('\r\n');
+            downloadCSV(csv, 'lola-softball-stats.csv');
+        });
+    }
+
+    // ===== Admin login / logout =====
+
+    function openAdminLoginModal() {
+        document.getElementById('adminEmailInput').value = '';
+        document.getElementById('adminPassInput').value = '';
+        document.getElementById('adminLoginModal').classList.add('active');
+    }
+
+    function closeAdminLoginModal() {
+        document.getElementById('adminLoginModal').classList.remove('active');
+    }
+
+    function submitAdminLogin(event) {
+        event.preventDefault();
+
+        if (typeof firebase === 'undefined' || !firebase.auth) {
+            alert('Firebase is not connected right now, so admin login is unavailable.');
+            return;
+        }
+
+        const email = document.getElementById('adminEmailInput').value.trim();
+        const password = document.getElementById('adminPassInput').value;
+        const submitBtn = event.target.querySelector('.save-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Signing in...';
+
+        firebase.auth().signInWithEmailAndPassword(email, password).then(() => {
+            try { localStorage.setItem('adminLastActivity', String(Date.now())); } catch (e) { /* ignore */ }
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Unlock';
+            closeAdminLoginModal();
+            // isAdmin and the UI update automatically via onAuthStateChanged.
+        }).catch((error) => {
+            console.error('Admin login failed:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Unlock';
+            alert('Login failed: ' + (error.message || 'Please check your email and password.'));
+        });
+    }
+
+    function logoutAdmin() {
+        if (typeof firebase === 'undefined' || !firebase.auth) return;
+        firebase.auth().signOut().catch((error) => {
+            console.error('Error signing out:', error);
+        });
+        // isAdmin and the UI update automatically via onAuthStateChanged.
+    }
+
+    function updateAdminUI() {
+        const bar = document.getElementById('adminBar');
+        const statusEl = document.getElementById('adminStatus');
+        const toggleLink = document.getElementById('adminToggleLink');
+        const requestsTabBtn = document.getElementById('requestsTabBtn');
+
+        if (isAdmin) {
+            bar.classList.add('is-admin');
+            statusEl.innerText = 'Admin Mode: ON';
+            toggleLink.innerText = 'Log Out';
+            toggleLink.onclick = function (e) { e.preventDefault(); logoutAdmin(); };
+            requestsTabBtn.style.display = '';
+            refreshPendingRequestBadge();
+        } else {
+            bar.classList.remove('is-admin');
+            statusEl.innerText = 'Viewing as: Family';
+            toggleLink.innerText = 'Admin Login';
+            toggleLink.onclick = function (e) { e.preventDefault(); openAdminLoginModal(); };
+            requestsTabBtn.style.display = 'none';
+
+            if (document.getElementById('requests').classList.contains('active')) {
+                switchTab('calendar', null);
+                const calBtn = document.querySelector('.tab-btn[onclick*="calendar"]');
+                if (calBtn) calBtn.classList.add('active');
+            }
+        }
+    }
+
+    function refreshPendingRequestBadge() {
+        if (!requestsRef) return;
+        requestsRef.once('value', (snapshot) => {
+            let count = 0;
+            snapshot.forEach(child => { if (child.val().status === 'pending') count++; });
+            const btn = document.getElementById('requestsTabBtn');
+            if (btn) btn.innerText = count > 0 ? `Requests (${count})` : 'Requests';
+        }).catch(error => console.error('Error checking requests:', error));
+    }
+
+    // ===== Non-admin change requests =====
+
+    function handleDeleteClick(id) {
+        if (isAdmin) {
+            deleteGame(id);
+        } else {
+            openRequestChangeModal(id, 'delete');
+        }
+    }
+
+    function requestChangeFromEditModal(type) {
+        const gameId = document.getElementById('editGameId').value;
+        closeEditModal();
+        openRequestChangeModal(gameId, type);
+    }
+
+    function openRequestChangeModal(gameId, type) {
+        pendingRequestGameId = gameId;
+        pendingRequestType = type;
+        document.getElementById('requestChangeTitle').innerText =
+            type === 'delete' ? 'Request to delete this game' : 'Request a change to this game';
+        document.getElementById('requestNote').value = '';
+        document.getElementById('requestChangeModal').classList.add('active');
+    }
+
+    function closeRequestChangeModal() {
+        pendingRequestGameId = null;
+        pendingRequestType = null;
+        document.getElementById('requestChangeModal').classList.remove('active');
+    }
+
+    function submitChangeRequest() {
+        if (!pendingRequestGameId || !requestsRef) {
+            closeRequestChangeModal();
+            return;
+        }
+
+        const note = document.getElementById('requestNote').value.trim();
+        const game = allGamesCache.find(g => g.id === pendingRequestGameId);
+
+        const requestObject = {
+            gameId: pendingRequestGameId,
+            gameLocation: game ? game.location : '',
+            gameDate: game ? game.date : '',
+            type: pendingRequestType,
+            note: note,
+            requestedAt: new Date().toISOString(),
+            status: 'pending'
+        };
+
+        const requestId = String(Date.now());
+        requestsRef.child(requestId).set(requestObject).then(() => {
+            closeRequestChangeModal();
+            alert('Your request has been sent. Please text Jose/Champ to request this change.');
+        }).catch(error => {
+            console.error('Error submitting request:', error);
+            alert('Something went wrong sending your request. Please text Jose/Champ directly.');
+        });
+    }
+
+    // ===== Admin: reviewing requests =====
+
+    function renderRequests() {
+        const container = document.getElementById('requestsList');
+
+        if (!requestsRef) {
+            container.innerHTML = '<div class="empty-state">Firebase is not connected, so requests are unavailable.</div>';
+            return;
+        }
+
+        container.innerHTML = '<div class="loading-state">Loading requests...</div>';
+
+        requestsRef.once('value', (snapshot) => {
+            const allRequests = [];
+            snapshot.forEach(child => allRequests.push({ id: child.key, ...child.val() }));
+
+            const pending = allRequests.filter(r => r.status === 'pending');
+
+            const btn = document.getElementById('requestsTabBtn');
+            if (btn) btn.innerText = pending.length > 0 ? `Requests (${pending.length})` : 'Requests';
+
+            if (pending.length === 0) {
+                container.innerHTML = '<div class="empty-state">No pending requests.</div>';
+                return;
+            }
+
+            pending.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+
+            container.innerHTML = pending.map(r => {
+                const dateLabel = r.gameDate
+                    ? new Date(r.gameDate).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })
+                    : 'Unknown date';
+                const typeLabel = r.type === 'delete' ? 'Delete request' : 'Edit request';
+
+                return `
+                    <div class="card request-card">
+                        <div class="history-header">${escapeHtml(typeLabel)}: ${escapeHtml(r.gameLocation || 'Unknown game')}</div>
+                        <div class="history-sub">${dateLabel}</div>
+                        ${r.note ? `<div class="request-note">"${escapeHtml(r.note)}"</div>` : ''}
+                        <div class="card-actions">
+                            <button type="button" class="btn-action edit" onclick="approveRequest('${r.id}')">Approve</button>
+                            <button type="button" class="btn-action delete" onclick="denyRequest('${r.id}')">Deny</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }).catch(error => {
+            console.error('Error loading requests:', error);
+            container.innerHTML = '<div class="empty-state">Error loading requests.</div>';
+        });
+    }
+
+    function denyRequest(requestId) {
+        if (!confirm('Deny this request? The requester will need to reach out again if they still want this change.')) return;
+
+        requestsRef.child(requestId).remove().then(() => {
+            renderRequests();
+        }).catch(error => {
+            console.error('Error denying request:', error);
+            alert('Error denying request.');
+        });
+    }
+
+    function approveRequest(requestId) {
+        requestsRef.child(requestId).once('value', (snapshot) => {
+            const req = snapshot.val();
+            if (!req) return;
+
+            requestsRef.child(requestId).remove().then(() => {
+                renderRequests();
+                if (req.type === 'delete') {
+                    deleteGame(req.gameId);
+                } else {
+                    openEditModal(req.gameId);
+                }
+            }).catch(error => {
+                console.error('Error approving request:', error);
+                alert('Error approving request.');
+            });
+        });
+    }
+</script>
+
+</body>
+</html>
