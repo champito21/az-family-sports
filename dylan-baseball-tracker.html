@@ -518,8 +518,7 @@
 <body>
 <div class="container">
     <div class="site-nav">
-        <a href="index.html">← Velasquez Sports</a>
-        <a href="olivia-vball-tracker.html">Olivia's Volleyball →</a>
+        <a href="index.html">← AZ Family Sports</a>
     </div>
 
     <div class="admin-bar" id="adminBar">
@@ -816,7 +815,7 @@
     // the signed-in account matching this UID can edit or delete existing games, or manage
     // change requests. This UID is not a secret — it's fine for it to appear in the page source;
     // the actual protection lives in Firebase's Security Rules, checked on Firebase's servers.
-    const ADMIN_UID = '798JVK2fpKZM6Jgvtaz52bRQSTG3';
+    const ADMIN_UID = '7sKC11oB1wbCRcl8IXaXVkt9e9L2';
     let isAdmin = false;
     let pendingRequestGameId = null;
     let pendingRequestType = null;
@@ -883,14 +882,13 @@
 
     // ========== PASTE YOUR FIREBASE CONFIG HERE ==========
     const firebaseConfig = {
-        apiKey: "AIzaSyBoQQxPu8FoDER0fmFNziaokM71xarbCqM",
-        authDomain: "dylan-baseball.firebaseapp.com",
-        databaseURL: "https://dylan-baseball-default-rtdb.firebaseio.com",
-        projectId: "dylan-baseball",
-        storageBucket: "dylan-baseball.firebasestorage.app",
-        messagingSenderId: "49979650551",
-        appId: "1:49979650551:web:d05880ad31dccc8fc4fef2",
-        measurementId: "G-V353JPBS24"
+        apiKey: "AIzaSyCt-L8qbpzuIkSnoRUWAogJ91GrwlukqVw",
+        authDomain: "az-family-sports.firebaseapp.com",
+        databaseURL: "https://az-family-sports-default-rtdb.firebaseio.com",
+        projectId: "az-family-sports",
+        storageBucket: "az-family-sports.firebasestorage.app",
+        messagingSenderId: "682932148688",
+        appId: "1:682932148688:web:98990495f08a22614941d5"
     };
     // ====================================================
 
@@ -901,8 +899,8 @@
         }
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        gamesRef = db.ref('games');
-        requestsRef = db.ref('changeRequests');
+        gamesRef = db.ref('kids/dylan/games');
+        requestsRef = db.ref('kids/dylan/changeRequests');
 
         firebase.auth().onAuthStateChanged((user) => {
             isAdmin = !!user && user.uid === ADMIN_UID;
