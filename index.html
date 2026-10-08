@@ -8,7 +8,8 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="AZ Sports">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>AZ Family Sports</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>AZ Family Sports</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -298,6 +299,15 @@
     font-size: 0.9rem;
   }
 
+  /* Status line under the calendar (offline / error messages) */
+  .cal-status {
+    text-align: center;
+    color: var(--dirt);
+    font-size: 0.85rem;
+    margin-top: 16px;
+    min-height: 1em;
+  }
+
   .legend {
     display: flex;
     flex-wrap: wrap;
@@ -333,6 +343,22 @@
     color: var(--chalk-dim);
   }
 </style>
+
+<!-- Safety net: if ANY script on this page crashes, show the reason on screen
+     instead of leaving the calendar stuck on "Loading season...". -->
+<script>
+  function showCalendarProblem(msg) {
+    var el = document.getElementById('calendarStatus');
+    if (el) el.textContent = msg;
+  }
+  window.addEventListener('error', function (e) {
+    showCalendarProblem('Script problem: ' + (e.message || 'unknown error') +
+      (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : ''));
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    showCalendarProblem('Script problem: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+  });
+</script>
 </head>
 <body>
   <div class="wrap">
@@ -360,7 +386,7 @@
       </div>
 
       <div class="legend" id="calendarLegend"></div>
-      <div class="cal-empty" id="calendarStatus"></div>
+      <div class="cal-status" id="calendarStatus"></div>
     </div>
 
     <div class="roster">
@@ -448,15 +474,22 @@
         { id: 'kai', name: 'Kai', sport: 'Baseball', emoji: '⚾', color: '#2563eb', page: 'kai-baseball-tracker.html' }
     ];
 
+    const GAMES_CACHE_KEY = 'azfs-games-cache-v1';
+
     let calendarViewDate = new Date();
     let allKidGames = [];
     let dbInstance = null;
 
-    try {
-        firebase.initializeApp(FIREBASE_CONFIG);
-        dbInstance = firebase.database();
-    } catch (e) {
-        console.error('Firebase failed to initialize on the homepage:', e);
+    if (typeof firebase === 'undefined') {
+        showCalendarProblem('The Firebase library did not load. Check your connection.');
+    } else {
+        try {
+            firebase.initializeApp(FIREBASE_CONFIG);
+            dbInstance = firebase.database();
+        } catch (e) {
+            console.error('Firebase failed to initialize on the homepage:', e);
+            showCalendarProblem('Firebase failed to start: ' + e.message);
+        }
     }
 
     function escapeHtmlHome(str) {
@@ -475,60 +508,57 @@
         `).join('');
     }
 
-   const GAMES_CACHE_KEY = 'azfs-games-cache-v1';
+    // Returns a list of games, or null if this kid's games could not be loaded.
+    function fetchKidGames(kid) {
+        return new Promise((resolve) => {
+            if (!dbInstance) { resolve(null); return; }
 
-function fetchKidGames(kid) {
-    return new Promise((resolve) => {
-        if (!dbInstance) { resolve(null); return; }
+            // Give up after 8 seconds instead of waiting forever
+            const timer = setTimeout(() => resolve(null), 8000);
 
-        // Give up after 8 seconds instead of waiting forever
-        const timer = setTimeout(() => resolve(null), 8000);
-
-        dbInstance.ref(`kids/${kid.id}/games`).once('value').then((snapshot) => {
-            clearTimeout(timer);
-            const games = [];
-            snapshot.forEach((child) => {
-                const g = child.val();
-                if (g && g.date) {
-                    games.push({ kid: kid, id: child.key, date: g.date, location: g.location || '' });
-                }
+            dbInstance.ref(`kids/${kid.id}/games`).once('value').then((snapshot) => {
+                clearTimeout(timer);
+                const games = [];
+                snapshot.forEach((child) => {
+                    const g = child.val();
+                    if (g && g.date) {
+                        games.push({ kid: kid, id: child.key, date: g.date, location: g.location || '' });
+                    }
+                });
+                resolve(games);
+            }).catch((err) => {
+                clearTimeout(timer);
+                console.error('Could not load games for', kid.name, err);
+                resolve(null);
             });
-            resolve(games);
-        }).catch((err) => {
-            clearTimeout(timer);
-            console.error('Could not load games for', kid.name, err);
-            resolve(null);   // null means "this one failed"
         });
-    });
-}
+    }
 
-function loadAllGames() {
-    const status = document.getElementById('calendarStatus');
+    function loadAllGames() {
+        const status = document.getElementById('calendarStatus');
 
-    Promise.all(KIDS.map(fetchKidGames)).then((results) => {
-        const anyFailed = results.some((r) => r === null);
+        Promise.all(KIDS.map(fetchKidGames)).then((results) => {
+            const anyFailed = results.some((r) => r === null);
 
-        if (!anyFailed) {
-            // Everything loaded: use it and save a copy on the phone
-            allKidGames = results.flat();
-            try { localStorage.setItem(GAMES_CACHE_KEY, JSON.stringify(allKidGames)); } catch (e) {}
-            status.innerText = '';
-        } else {
-            // Something failed: fall back to the last saved schedule
-            let saved = null;
-            try { saved = JSON.parse(localStorage.getItem(GAMES_CACHE_KEY)); } catch (e) {}
-
-            if (saved) {
-                allKidGames = saved;
-                status.innerText = 'Offline: showing your last saved schedule.';
+            if (!anyFailed) {
+                allKidGames = results.flat();
+                try { localStorage.setItem(GAMES_CACHE_KEY, JSON.stringify(allKidGames)); } catch (e) {}
+                status.textContent = '';
             } else {
-                allKidGames = results.filter(Boolean).flat();
-                status.innerText = 'Could not reach the schedule. Check your connection and reopen the app.';
+                let saved = null;
+                try { saved = JSON.parse(localStorage.getItem(GAMES_CACHE_KEY)); } catch (e) {}
+
+                if (saved) {
+                    allKidGames = saved;
+                    status.textContent = 'Offline: showing your last saved schedule.';
+                } else {
+                    allKidGames = results.filter(Boolean).flat();
+                    status.textContent = 'Could not reach the schedule. Check your connection and reopen the app.';
+                }
             }
-        }
-        renderCalendar();
-    });
-}
+            renderCalendar();
+        });
+    }
 
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
@@ -586,9 +616,14 @@ function loadAllGames() {
 
     renderLegend();
     loadAllGames();
+</script>
+
+<!-- Lets the app install and open offline (see sw.js) -->
 <script>
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js');
+    });
   }
 </script>
 </body>
