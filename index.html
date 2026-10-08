@@ -475,28 +475,60 @@
         `).join('');
     }
 
-    function fetchKidGames(kid) {
-        return new Promise((resolve) => {
-            if (!dbInstance) { resolve([]); return; }
-            dbInstance.ref(`kids/${kid.id}/games`).once('value').then((snapshot) => {
-                const games = [];
-                snapshot.forEach((child) => {
-                    const g = child.val();
-                    if (g && g.date) {
-                        games.push({ kid: kid, id: child.key, date: g.date, location: g.location || '' });
-                    }
-                });
-                resolve(games);
-            }).catch(() => resolve([]));
-        });
-    }
+   const GAMES_CACHE_KEY = 'azfs-games-cache-v1';
 
-    function loadAllGames() {
-        Promise.all(KIDS.map(fetchKidGames)).then((results) => {
-            allKidGames = results.flat();
-            renderCalendar();
+function fetchKidGames(kid) {
+    return new Promise((resolve) => {
+        if (!dbInstance) { resolve(null); return; }
+
+        // Give up after 8 seconds instead of waiting forever
+        const timer = setTimeout(() => resolve(null), 8000);
+
+        dbInstance.ref(`kids/${kid.id}/games`).once('value').then((snapshot) => {
+            clearTimeout(timer);
+            const games = [];
+            snapshot.forEach((child) => {
+                const g = child.val();
+                if (g && g.date) {
+                    games.push({ kid: kid, id: child.key, date: g.date, location: g.location || '' });
+                }
+            });
+            resolve(games);
+        }).catch((err) => {
+            clearTimeout(timer);
+            console.error('Could not load games for', kid.name, err);
+            resolve(null);   // null means "this one failed"
         });
-    }
+    });
+}
+
+function loadAllGames() {
+    const status = document.getElementById('calendarStatus');
+
+    Promise.all(KIDS.map(fetchKidGames)).then((results) => {
+        const anyFailed = results.some((r) => r === null);
+
+        if (!anyFailed) {
+            // Everything loaded: use it and save a copy on the phone
+            allKidGames = results.flat();
+            try { localStorage.setItem(GAMES_CACHE_KEY, JSON.stringify(allKidGames)); } catch (e) {}
+            status.innerText = '';
+        } else {
+            // Something failed: fall back to the last saved schedule
+            let saved = null;
+            try { saved = JSON.parse(localStorage.getItem(GAMES_CACHE_KEY)); } catch (e) {}
+
+            if (saved) {
+                allKidGames = saved;
+                status.innerText = 'Offline: showing your last saved schedule.';
+            } else {
+                allKidGames = results.filter(Boolean).flat();
+                status.innerText = 'Could not reach the schedule. Check your connection and reopen the app.';
+            }
+        }
+        renderCalendar();
+    });
+}
 
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
