@@ -1044,7 +1044,7 @@
 
                 return `
                     <div class="card history-card">
-                        <div class="history-header">${game.location}</div>
+                        <div class="history-header">${escapeHtml(game.location)}</div>
                         <div class="history-sub">${formattedDate}</div>
                         <div class="history-stats">
                             <div><strong>Touchdowns:</strong> ${game.stats.touchdowns}</div>
@@ -1053,8 +1053,8 @@
                             <div><strong>Interceptions:</strong> ${game.stats.interceptions}</div>
                         </div>
                         <div class="card-actions">
-                            <button type="button" class="btn-action edit" onclick="openEditModal('${game.id}')">Edit</button>
-                            <button type="button" class="btn-action delete" onclick="handleDeleteClick('${game.id}')">Delete</button>
+                            <button type="button" class="btn-action edit" data-id="${escapeHtml(game.id)}" onclick="openEditModal(this.dataset.id)">Edit</button>
+                            <button type="button" class="btn-action delete" data-id="${escapeHtml(game.id)}" onclick="handleDeleteClick(this.dataset.id)">Delete</button>
                         </div>
                     </div>
                 `;
@@ -1248,7 +1248,7 @@
             listEl.innerHTML = '<div class="day-list-empty">No games scheduled this day yet.</div>';
         } else {
             listEl.innerHTML = dayGames.map(g => `
-                <div class="day-list-item" onclick="selectDayGame('${g.id}')">
+                <div class="day-list-item" data-id="${escapeHtml(g.id)}" onclick="selectDayGame(this.dataset.id)">
                     <span>${escapeHtml(g.location)}</span>
                     <span>›</span>
                 </div>
@@ -1560,8 +1560,8 @@
                         <div class="history-sub">${dateLabel}</div>
                         ${r.note ? `<div class="request-note">"${escapeHtml(r.note)}"</div>` : ''}
                         <div class="card-actions">
-                            <button type="button" class="btn-action edit" onclick="approveRequest('${r.id}')">Approve</button>
-                            <button type="button" class="btn-action delete" onclick="denyRequest('${r.id}')">Deny</button>
+                            <button type="button" class="btn-action edit" data-id="${escapeHtml(r.id)}" onclick="approveRequest(this.dataset.id)">Approve</button>
+                            <button type="button" class="btn-action delete" data-id="${escapeHtml(r.id)}" onclick="denyRequest(this.dataset.id)">Deny</button>
                         </div>
                     </div>
                 `;
