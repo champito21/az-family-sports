@@ -29,6 +29,8 @@
     --flagfootball-dim: #831843;
     --kaibaseball: #2563eb;
     --kaibaseball-dim: #1e3a8a;
+    --josesoftball: #5c6874;
+    --josesoftball-dim: #2a3138;
     --dirt: #c2894f;
     --line: rgba(244, 242, 236, 0.1);
   }
@@ -136,6 +138,7 @@
   .card.softball        { background: linear-gradient(165deg, var(--softball) 0%, var(--softball-dim) 100%); }
   .card.flagfootball    { background: linear-gradient(165deg, var(--flagfootball) 0%, var(--flagfootball-dim) 100%); }
   .card.kaibaseball     { background: linear-gradient(165deg, var(--kaibaseball) 0%, var(--kaibaseball-dim) 100%); }
+  .card.josesoftball    { background: linear-gradient(165deg, var(--josesoftball) 0%, var(--josesoftball-dim) 100%); }
 
   .card .initial {
     position: absolute;
@@ -444,9 +447,20 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </span>
       </a>
+
+      <a class="card josesoftball" href="jose-sball-tracker.html">
+        <span class="initial">J</span>
+        <span class="sport-icon">🥎</span>
+        <p class="name">Jose</p>
+        <p class="sport">Softball</p>
+        <span class="cta">
+          View stats
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </span>
+      </a>
     </div>
 
-    <footer>Built for five very busy game schedules.</footer>
+    <footer>Built for six very busy game schedules.</footer>
   </div>
 
 <!-- Firebase (read-only: shows each kid's games on the calendar above, no sign-in needed here) -->
@@ -454,7 +468,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
 
 <script>
-    // One shared Firebase project now covers all five kids — each kid's games live
+    // One shared Firebase project now covers all six athletes — each kid's games live
     // under their own path (kids/<id>/games) in the same database.
     const FIREBASE_CONFIG = {
         apiKey: "AIzaSyCt-L8qbpzuIkSnoRUWAogJ91GrwlukqVw",
@@ -471,7 +485,8 @@
         { id: 'dylan', name: 'Dylan', sport: 'Baseball', emoji: '⚾', color: '#16a34a', page: 'dylan-baseball-tracker.html' },
         { id: 'lolaSoftball', name: 'Lola', sport: 'Softball', emoji: '🥎', color: '#ea580c', page: 'lola-sball-tracker.html' },
         { id: 'lolaFlagFootball', name: 'Lola', sport: 'Flag Football', emoji: '🏈', color: '#db2777', page: 'lola-ffball-tracker.html' },
-        { id: 'kai', name: 'Kai', sport: 'Baseball', emoji: '⚾', color: '#2563eb', page: 'kai-baseball-tracker.html' }
+        { id: 'kai', name: 'Kai', sport: 'Baseball', emoji: '⚾', color: '#2563eb', page: 'kai-baseball-tracker.html' },
+        { id: 'joseSoftball', name: 'Jose', sport: 'Softball', emoji: '🥎', color: '#5c6874', page: 'jose-sball-tracker.html' }
     ];
 
     const GAMES_CACHE_KEY = 'azfs-games-cache-v1';
